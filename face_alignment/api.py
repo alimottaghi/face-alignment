@@ -206,6 +206,8 @@ class FaceAlignment:
         if len(detected_faces) == 0:
             print("Warning: No faces were detected.")
             return None
+        
+        # print(f'number of detected faces {len(detected_faces)}')
 
         landmarks = []
         # A batch for each frame
@@ -239,10 +241,10 @@ class FaceAlignment:
                 if self.landmarks_type == LandmarksType._3D:
                     pts, pts_img = pts.view(68, 2) * 4, pts_img.view(68, 2)
                     heatmaps = np.zeros((68, 256, 256), dtype=np.float32)
-                    for i in range(68):
-                        if pts[i, 0] > 0:
-                            heatmaps[i] = draw_gaussian(
-                                heatmaps[i], pts[i], 2)
+                    for j in range(68):
+                        if pts[j, 0] > 0:
+                            heatmaps[j] = draw_gaussian(
+                                heatmaps[j], pts[j], 2)
                     heatmaps = torch.from_numpy(
                         heatmaps).unsqueeze_(0)
 
@@ -255,8 +257,11 @@ class FaceAlignment:
                     pts, pts_img = pts.view(-1, 68, 2) * 4, pts_img.view(-1, 68, 2)
                 landmark_set.append(pts_img.numpy())
 
-            landmark_set = np.concatenate(landmark_set, axis=0)
-            landmarks.append(landmark_set)
+            if len(landmark_set):
+                landmark_set = np.concatenate(landmark_set, axis=0)
+                landmarks.append(landmark_set)
+            else:
+                landmarks.append(np.array([0]))
         return landmarks
 
     def get_landmarks_from_directory(self, path, extensions=['.jpg', '.png'], recursive=True, show_progress_bar=True):
