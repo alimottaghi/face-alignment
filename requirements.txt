@@ -1,3 +1,7 @@
+torch
+numpy
 opencv-python
 scipy>=0.17.0
 scikit-image
+tqdm
+matplotlib
